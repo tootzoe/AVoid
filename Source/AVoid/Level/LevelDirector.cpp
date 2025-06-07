@@ -11,9 +11,9 @@
 
 #include "LevelDirector.h"
 
-PRAGMA_DISABLE_OPTIMIZATION
 
-
+UE_DISABLE_OPTIMIZATION
+//  UE_DISABLE_OPTIMIZATION_SHIP  // for shipping
 
 // Sets default values
 ALevelDirector::ALevelDirector()
@@ -131,4 +131,5 @@ void ALevelDirector::ResetLevelDirector()
 }
 
 
-PRAGMA_ENABLE_OPTIMIZATION
+
+UE_ENABLE_OPTIMIZATION

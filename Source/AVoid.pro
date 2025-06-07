@@ -3,54 +3,46 @@
 
 
 
-UE_ROOT = D:/UE5/UE_5.4
+#TEMPLATE = app
+CONFIG += console
+CONFIG -= app_bundle
+CONFIG -= qt
 
-INCLUDEPATH += $$UE_ROOT/Engine/Source \
-                           $$UE_ROOT/Engine/Intermediate/Build/Win64/UE4Editor/Inc \
-                           $$UE_ROOT/Engine/Intermediate/Build/Win64/UE4Editor/Inc/Engine/UHT \
-                           $$UE_ROOT/Engine/Source/Runtime \
-                           $$UE_ROOT/Engine/Source/Runtime/Engine/Classes \
-                           $$UE_ROOT/Engine/Source/Runtime/Engine/Public \
-                           $$UE_ROOT/Engine/Source/Runtime/TraceLog/Public \
-                           $$UE_ROOT/Engine/Source/Runtime/Core/Public \
-                           $$UE_ROOT/Engine/Source/Runtime/CoreUObject/Public \
-                           $$UE_ROOT/Engine/Source/Runtime/UMG/Public \
-                           $$UE_ROOT/Engine/Source/Runtime/Experimental/Chaos/Public \
-                           $$UE_ROOT/Engine/Source/Runtime/AIModule/Classes \
-                           $$UE_ROOT/Engine/Plugins/EnhancedInput/Source/EnhancedInput/Public
+#
+# below one line project name need to be lowercaes
+PRJNAMETOOT = AVoid
+DEFINES += "AVOID_API="
+DEFINES += "AVOID_API(...)="
+#
+DEFINES += "UCLASS()=AVOID_API"
+DEFINES += "UCLASS(...)=AVOID_API"
+#
+# this is true during development with unreal-editor...
 
-######  Project reletived
-INCLUDEPATH += ./../Intermediate/Build/Win64/UnrealEditor/Inc/AVoid/UHT
+DEFINES += "WITH_EDITORONLY_DATA=1"
 
-INCLUDEPATH += ./AVoid
-
-
-
+## this project only
+DEFINES += PLATFORM_ANDROID
+##
 
 
-
-
-
-
-
-
-
-
-DEFINES += "USE_QTCREATOR"
-DEFINES += "AVOID_API=  "
-
-DEFINES += "BlueprintCallable" \
-           "BlueprintImplementableEvent" \
-           "BlueprintNativeEvent" \
-           "_Implementation" "VisibleAnywhere" \
-            "EditAnywhere" "BlueprintReadWrite" \
-            "Category" "BlueprintReadOnly" \
-            "Transient" "VisibleDefaultsOnly" \
-            "EditDefaultsOnly" "EditInstanceOnly" \
-            "AllowPrivateAccess"
-
-
-#####
+INCLUDEPATH += ../Intermediate/Build/Win64/UnrealEditor/Inc/$$PRJNAMETOOT/UHT
+INCLUDEPATH += $$PRJNAMETOOT $$PRJNAMETOOT/Public $$PRJNAMETOOT/Private
+#INCLUDEPATH += ../Plugins/NNEPostProcessing/Source/NNEPostProcessing/Public
+# we should follow UE project struct to include files, start from prj.Build.cs folder
+#
+#  The Thirdparty libs
+#
+#
+#
+include(defs.pri)
+include(inc.pri)
+#
+## this project only
+# INCLUDEPATH += $$UESRCROOT/Runtime/Renderer/Private
+##
+#
+#
 
 DISTFILES += \
     AVoid.Target.cs \
@@ -83,10 +75,3 @@ SOURCES += \
     AVoid/Level/LevelDirector.cpp \
     AVoid/Level/ObstacleSpawner.cpp \
     AVoid/UI/AVoidHUD.cpp
-
-
-
-
-
-
-

@@ -23,8 +23,5 @@ public:
     void Hide();
 
 
-
-
-
 	
 };
