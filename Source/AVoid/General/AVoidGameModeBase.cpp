@@ -11,6 +11,8 @@
 #include "AVoid/Level/LevelDirector.h"
 #include "AVoid/UI/AVoidHUD.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
+#include "TimerManager.h"
 
 void AAVoidGameModeBase::StartPlay()
 {
@@ -24,10 +26,16 @@ void AAVoidGameModeBase::StartPlay()
     // PlayerController->Initialize(this);
 
 	Character->OnCharacterDeadDelegate.AddDynamic(this, &AAVoidGameModeBase::GameOver);
-    Character->DisableInput(PlayerController);
+     Character->DisableInput(PlayerController);
 
 
 
+#if PLATFORM_ANDROID || PLATFORM_IOS
+     GetWorld()->GetTimerManager().SetTimerForNextTick ([&](){
+         HUD->Hide();
+     });
+
+#endif
 
 }
 
@@ -75,6 +83,6 @@ void AAVoidGameModeBase::RestartGame()
 void AAVoidGameModeBase::GameOver()
 {
 	HUD->ShowGameOver();
-	Character->DisableInput(PlayerController);
+    Character->DisableInput(PlayerController);
 	LevelDirector->Stop();
 }

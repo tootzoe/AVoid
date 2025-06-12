@@ -42,7 +42,10 @@ void ULocomotion::Move(const FInputActionValue &val)
 
     if(v.IsNearlyZero() ) return;
 
+
     InputVector += GetOwner()->GetActorUpVector() * v.Y + GetOwner()->GetActorRightVector() * v.X;
+
+
 
 }
 
@@ -55,7 +58,8 @@ void ULocomotion::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	MovementVector+=InputVector;
 	ApplyMovementFriction();
 	
-	DEBUG_LOG_TICK(MovementVector.ToString());
+    //DEBUG_LOG_TICK(MovementVector.ToString());
+
 	GetOwner()->SetActorLocation(GetOwner()->GetActorLocation() + MovementVector*DeltaTime*MovementSpeed);
 	InputVector = FVector(0);
 }

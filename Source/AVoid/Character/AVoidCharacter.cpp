@@ -146,12 +146,13 @@ void AAVoidCharacter::MoveLight(const FInputActionValue &val)
 {
     const FVector2D v = val.Get<FInputActionValue::Axis2D>();
 
-     UE_LOG(LogTemp, Warning, TEXT("x: %02f, y : %02f....%hs") , v.X, v.Y, __func__);
+   //  UE_LOG(LogTemp, Warning, TEXT("x: %02f, y : %02f....%hs") , v.X, v.Y, __func__);
 
     if(v.IsNearlyZero() ) return;
 
     Mechanics->LightHorizontal(v.X);
-    Mechanics->LightVertical(v.Y);
+
+     Mechanics->LightVertical(v.Y);
 
 }
 
