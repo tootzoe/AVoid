@@ -1,50 +1,69 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
 
+#include "AVoidPlayerController.h"
 
-
-#include "InputAction.h"
-#include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Engine/LocalPlayer.h"
 #include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+#include "InputAction.h"
+#include "Engine/LocalPlayer.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
 
 #include "AVoidGameModeBase.h"
 
 
 
 
-#include "AVoidPlayerController.h"
+// void AAVoidPlayerController::Initialize(AAVoidGameModeBase* GameMode)
+// {
+// 	InputComponent->BindAction("Start", IE_Pressed, GameMode, &AAVoidGameModeBase::StartGame);
+// 	InputComponent->BindAction("Restart", IE_Pressed, GameMode, &AAVoidGameModeBase::RestartGame);
+// }
 
-
-void AAVoidPlayerController::Initialize(AAVoidGameModeBase *GameMode)
+void AAVoidPlayerController::InitInputSystem()
 {
+    Super::InitInputSystem();
 
-    //UE_LOG(LogTemp, Warning, TEXT("Setup up Start/Restart Input here......"));
 
-    UInputAction *gameStartAct = LoadObject<UInputAction>(nullptr,TEXT("/Game/Input/Menu/IA_StartGame.IA_StartGame"));
-    UInputAction *gameRestartAct = LoadObject<UInputAction>(nullptr,TEXT("/Game/Input/Menu/IA_RestartGame.IA_RestartGame"));
+    //
+    checkf(DefaultIMC , TEXT("DefaultIMC invalid...."));
+    checkf(StartGameAct , TEXT("StartGameAct invalid...."));
+    checkf(RestartGameAct , TEXT("RestartGameAct invalid...."));
 
-    UInputMappingContext *gameMenuMapCtx = LoadObject<UInputMappingContext>(nullptr, TEXT("/Game/Input/Menu/IMC_GameMenu.IMC_GameMenu"));
 
-    if (!gameStartAct || !gameRestartAct  || !gameMenuMapCtx  ) {
-           UE_LOG(LogTemp, Warning, TEXT(" Load Input Actions or InputMappingContext failed...."));
-           return;
-      }
 
-    if (UEnhancedInputComponent *eic = CastChecked<UEnhancedInputComponent>(InputComponent)){
-         eic->BindAction(gameStartAct , ETriggerEvent::Triggered , GameMode , &AAVoidGameModeBase::StartGame );
 
-         eic->BindAction(gameRestartAct , ETriggerEvent::Triggered , GameMode , &AAVoidGameModeBase::RestartGame );
-    }
+    UEnhancedInputComponent* tmpEIComp = Cast<UEnhancedInputComponent>(InputComponent);
+    checkf( tmpEIComp, TEXT("Cast to UEnhancedInputComponent invalid...."));
 
-    APlayerController *controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-    if (controller)
-     if (APlayerController *ap = Cast<APlayerController>(controller)){
-          if(UEnhancedInputLocalPlayerSubsystem *subSys = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(ap->GetLocalPlayer())){
-              subSys->AddMappingContext(gameMenuMapCtx , 0);
-          }
 
-     }
+    UEnhancedInputLocalPlayerSubsystem* einputSubsys = GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+
+    checkf(einputSubsys , TEXT("einputSubsys invalid...."));
+
+    einputSubsys->ClearAllMappings();
+
+    einputSubsys->AddMappingContext(DefaultIMC, 0);
+
+    AAVoidGameModeBase* tmpGM =  CastChecked <AAVoidGameModeBase>(   UGameplayStatics::GetGameMode (GetWorld()));
+
+
+    tmpEIComp->BindAction(StartGameAct , ETriggerEvent::Started, tmpGM, &AAVoidGameModeBase::StartGame  );
+    tmpEIComp->BindAction(RestartGameAct , ETriggerEvent::Started, tmpGM, &AAVoidGameModeBase::RestartGame  );
+
+    //
+   // bShowMouseCursor = true;
 
 }
+
+
+// void AAVoidPlayerController::BeginPlay()
+// {
+//     Super::BeginPlay();
+
+
+//    // bShowMouseCursor = true;
+
+// }
+

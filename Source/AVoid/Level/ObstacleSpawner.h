@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
 
 #pragma once
 
@@ -6,34 +6,29 @@
 #include "Components/ActorComponent.h"
 #include "ObstacleSpawner.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class AVOID_API UObstacleSpawner : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
+public:
 	UObstacleSpawner();
-    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	int DifficultyCounter;
 
-    int DifficultyCounter;
-
-    AActor *SpawnObstacle();
-
+	AActor* SpawnObstacle();
+	
 protected:
-	// Called when the game starts
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<AActor>> EasyObstacle;
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<AActor>> MediumObstacle;
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<AActor>> HardObstacle;
+	
 	virtual void BeginPlay() override;
 
-    UPROPERTY(EditDefaultsOnly)
-    TArray<TSubclassOf<AActor> > EasyObstacle;
-    UPROPERTY(EditDefaultsOnly)
-    TArray<TSubclassOf<AActor> > MediumObstacle;
-    UPROPERTY(EditDefaultsOnly)
-    TArray<TSubclassOf<AActor> > HardObstacle;
-
 private:
-    TSubclassOf<AActor> GetRandomActorFromArray(TArray<TSubclassOf< AActor > > Actors);
-		
+	TSubclassOf<AActor> GetRandomActorFromArray(TArray<TSubclassOf<AActor>> Actors);
+
 };

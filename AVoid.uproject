@@ -7,20 +7,10 @@
 		{
 			"Name": "AVoid",
 			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine"
-			]
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
-		{
-			"Name": "ModelingToolsEditorMode",
-			"Enabled": true,
-			"TargetAllowList": [
-				"Editor"
-			]
-		},
 		{
 			"Name": "Bridge",
 			"Enabled": false
@@ -37,5 +27,9 @@
 			"Name": "UdpMessaging",
 			"Enabled": false
 		}
+	],
+	"TargetPlatforms": [
+		"Android",
+		"Windows"
 	]
 }

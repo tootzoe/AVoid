@@ -1,135 +1,136 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright (c) Guillem Serra. All Rights Reserved.
 
+#include "LevelDirector.h"
 
-
-#include "Kismet/KismetMathLibrary.h"
-#include "TimerManager.h"
 #include "ObstacleSpawner.h"
 
 #include "AVoid/Utils/Debug.h"
 
-
-#include "LevelDirector.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 UE_DISABLE_OPTIMIZATION
-//  UE_DISABLE_OPTIMIZATION_SHIP  // for shipping
 
-// Sets default values
 ALevelDirector::ALevelDirector()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	Root = CreateDefaultSubobject<USceneComponent>("Root");
+	ObstacleSpawner = CreateDefaultSubobject<UObstacleSpawner>("ObstacleSpawner");
 
-    Root = CreateDefaultSubobject<USceneComponent>("Root");
-    ObstacleSpawner = CreateDefaultSubobject<UObstacleSpawner>("ObstacleSpawner");
-
-    RootComponent = Root;
-
-}
-
-// Called when the game starts or when spawned
-void ALevelDirector::BeginPlay()
-{
-	Super::BeginPlay();
-
-    InitialLocation = Root->GetComponentLocation() ; // + FVector(SpawnPositionOffset, 0,0);
-    Location = InitialLocation;
-
-    AddAlreadySpawnedActors();
-
-    Stop();
-
-    InitialSpawnTimer = SpawnTimer;
-
-}
-
-void ALevelDirector::SpawnWell()
-{
-    FRotator Rotation = FRotator(0, 0, UKismetMathLibrary::RandomFloatInRange(0, 360));
-    AActor *Actor = GetWorld()->SpawnActor<AActor>(ActorToSpawn , InitialLocation + FVector(SpawnPositionOffset * 3 , 0 , 0),
-                                                   Rotation, SpawnParameters);
-    Actor->AttachToComponent(Root , FAttachmentTransformRules::KeepWorldTransform);
-    SpawnsArr.Add(Actor);
-    if(SpawnsArr.Num() > 5){
-        RemoveSpawnHead();
-    }
-}
-
-void ALevelDirector::SpawnObstacle()
-{
-    SpawnTimer -= SpawnTimerDecreaseInSeconds;
-    if(SpawnTimer < 2.f){
-        //Win ? State ? X d
-        SpawnTimer = 2.f;
-    }
-
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle , this, &ALevelDirector::SpawnObstacle , SpawnTimer);
-    AActor *o = ObstacleSpawner->SpawnObstacle();
-    o->AttachToComponent(Root , FAttachmentTransformRules::KeepWorldTransform);
-    ObstaclesArr.Add(o);
-
-}
-
-void ALevelDirector::RemoveSpawnHead()
-{
-    if(SpawnsArr.Num() == 0 ) return;
-    AActor *a = SpawnsArr[0];
-    SpawnsArr.Remove(a);
-    if(!a) return;
-
-    a->Destroy();
+	RootComponent = Root;
 }
 
 void ALevelDirector::AddAlreadySpawnedActors()
 {
-    for(AActor *a : AlreadyPlacedActors){
-        SpawnsArr.Add(a);
-    }
-
+	for (AActor* AlreadyPlacedActor : AlreadyPlacedActors)
+	{
+		Spawns.Add(AlreadyPlacedActor);
+	}
 }
 
-// Called every frame
+void ALevelDirector::BeginPlay()
+{
+	Super::BeginPlay();
+	InitialLocation = Root->GetComponentLocation();// +  FVector(SpawnPositionOffset, 0, 0);
+	Location = InitialLocation;
+
+	AddAlreadySpawnedActors();
+	Stop();
+	InitialSpawnTimer = SpawnTimer;
+}
+
 void ALevelDirector::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	Location+=FVector(-1,0,0)*Gravity;
+	Root->SetWorldLocation(Location);
+
+	float Mod = FMath::Fmod(FMath::Abs(Location.X), 7500.f);
+	if(FMath::IsNearlyEqual(Mod, 7500.f, 100.f))
+	{
+		SpawnWell();
+	}
 }
 
 void ALevelDirector::Start()
 {
-    SetActorTickEnabled(true);
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ALevelDirector::SpawnObstacle, SpawnTimer);
+	SetActorTickEnabled(true);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ALevelDirector::SpawnObstacle, SpawnTimer);
 }
 
 void ALevelDirector::Stop()
 {
-    GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+}
+
+void ALevelDirector::SpawnWell()
+{
+	FRotator Rotation = FRotator(0, 0, UKismetMathLibrary::RandomFloatInRange(0, 360));
+	AActor* Actor = GetWorld()->SpawnActor<AActor>(ActorToSpawn, InitialLocation +  FVector(SpawnPositionOffset*3, 0, 0), Rotation, SpawnParameters);
+	Actor->AttachToComponent(Root, FAttachmentTransformRules::KeepWorldTransform);
+	Spawns.Add(Actor);
+
+	if(Spawns.Num() > 5)
+	{
+		RemoveSpawnHead();
+	}
+}
+
+void ALevelDirector::SpawnObstacle()
+{
+	SpawnTimer-= SpawnTimerDecreaseInSeconds;
+	if(SpawnTimer < 2.f)
+	{
+		//WIN STATE ?  XD
+		SpawnTimer = 2.f;
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ALevelDirector::SpawnObstacle, SpawnTimer);
+
+	AActor* Obstacle = ObstacleSpawner->SpawnObstacle();
+	Obstacle->AttachToComponent(Root, FAttachmentTransformRules::KeepWorldTransform);
+	Obstacles.Add(Obstacle);
+}
+
+void ALevelDirector::RemoveSpawnHead()
+{
+	AActor* ActorToRemove;
+	if(Spawns.Num() == 0) return;
+	
+	ActorToRemove = Spawns[0];
+	Spawns.Remove(ActorToRemove);
+	if(!ActorToRemove) return;
+	
+	ActorToRemove->Destroy();
 }
 
 void ALevelDirector::ResetLevelDirector()
 {
-    Super::Reset();
-    Root->SetWorldLocation(InitialLocation);
+	Super::Reset();
 
-    while(SpawnsArr.Num() > 0){
-        RemoveSpawnHead();
-    }
+	Root->SetWorldLocation(InitialLocation);
 
-    for(AActor *o  : ObstaclesArr){
-        if(o && IsValid(o))
-            o->Destroy();
-    }
+	while(Spawns.Num() != 0)
+	{
+		RemoveSpawnHead();
+	}
 
-    SpawnsArr.Empty();
-    ObstaclesArr.Empty();
+	for (AActor* Obstacle : Obstacles)
+	{
+		if(Obstacle && IsValid(Obstacle))
+		{
+			Obstacle->Destroy();
+		}
+	}
 
-    ObstacleSpawnCounter = 0;
-    ObstacleSpawner->DifficultyCounter = 0;
-    SpawnTimer = InitialSpawnTimer;
-
+	Spawns.Empty();
+	Obstacles.Empty();
+	
+	ObstacleSpawnCounter = 0;
+	ObstacleSpawner->DifficultyCounter = 0;
+	SpawnTimer = InitialSpawnTimer;
 }
-
-
 
 UE_ENABLE_OPTIMIZATION

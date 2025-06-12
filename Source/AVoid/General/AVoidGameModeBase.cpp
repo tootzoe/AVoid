@@ -1,87 +1,80 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "AVoidPlayerController.h"
-#include "../Charactor/AVoidCamera.h"
-#include "../Charactor/AVoidCharacter.h"
-#include "../Charactor/CharacterLight.h"
-#include "../Level/LevelDirector.h"
-#include "../UI/AVoidHUD.h"
-
-#include "Kismet/GameplayStatics.h"
-
-
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "AVoidGameModeBase.h"
 
 
 
-
+#include "AVoidPlayerController.h"
+#include "AVoid/Character/AVoidCamera.h"
+#include "AVoid/Character/AVoidCharacter.h"
+#include "AVoid/Character/CharacterLight.h"
+#include "AVoid/Level/LevelDirector.h"
+#include "AVoid/UI/AVoidHUD.h"
+#include "Kismet/GameplayStatics.h"
 
 void AAVoidGameModeBase::StartPlay()
 {
-    Super::StartPlay();
+	Super::StartPlay();
 
-    UWorld *World = GetWorld();
-    PlayerController = Cast<AAVoidPlayerController>(UGameplayStatics::GetPlayerController(World, 0));
-    HUD = Cast<AAVoidHUD>(PlayerController->GetHUD());
-    Character = Cast<AAVoidCharacter>(PlayerController->GetCharacter());
-    //Camera = Cast<AAVoidCamera>(UGameplayStatics::GetPlayerCameraManager(World, 0)->Camera);
-    PlayerController->Initialize(this);
+	UWorld* World = GetWorld();
+	PlayerController = Cast<AAVoidPlayerController>(UGameplayStatics::GetPlayerController(World, 0)); 
+	HUD = Cast<AAVoidHUD>(PlayerController->GetHUD());
+	Character = Cast<AAVoidCharacter>(PlayerController->GetCharacter());
+	//Camera = Cast<AAVoidCamera>(UGameplayStatics::GetPlayerCameraManager(World, 0)->Camera);
+    // PlayerController->Initialize(this);
 
-    Character->OnCharacterDeadDelegate.AddDynamic(this, &AAVoidGameModeBase::GameOver);
+	Character->OnCharacterDeadDelegate.AddDynamic(this, &AAVoidGameModeBase::GameOver);
     Character->DisableInput(PlayerController);
+
+
+
+
 }
 
-void AAVoidGameModeBase::SetCamera(AAVoidCamera *camera)
+void AAVoidGameModeBase::SetCamera(AAVoidCamera* camera)
 {
-     Camera = camera;
+	this->Camera = camera;
 }
 
-void AAVoidGameModeBase::SetLevelDirector(ALevelDirector *levelDirector)
+void AAVoidGameModeBase::SetLevelDirector(ALevelDirector* levelDirector)
 {
-    LevelDirector = levelDirector;
+	this->LevelDirector = levelDirector;
 }
 
-void AAVoidGameModeBase::SetCharacterLight(ACharacterLight *characterLight)
+void AAVoidGameModeBase::SetCharacterLight(ACharacterLight* characterLight)
 {
-    CharacterLight = characterLight;
+	this->CharacterLight = characterLight;
 }
 
 void AAVoidGameModeBase::StartGame()
 {
-    if(bInGame) return;
-
-    HUD->Hide();
-
-    Character->EnableInput(PlayerController);
-    LevelDirector->Start();
-    Character->RestartCharacter();
-    CharacterLight->SetActorTickEnabled(true);
-    PlayerController->PlayerCameraManager->SetViewTarget(Camera);
-
-    bInGame = true;
+	if(bInGame) return;
+	
+	HUD->Hide();
+	Character->EnableInput(PlayerController);
+	LevelDirector->Start();
+	CharacterLight->SetActorTickEnabled(true);
+	bInGame = true;
+	PlayerController->PlayerCameraManager->SetViewTarget(Camera);
 }
 
 void AAVoidGameModeBase::RestartGame()
 {
-    if(!bInGame) return;
+	if(!bInGame) return;
 
-    HUD->Hide();
-    LevelDirector->ResetLevelDirector();
-    LevelDirector->Start();
-    Character->EnableInput(PlayerController);
-    Character->RestartCharacter();
-   // Camera->Restart();
-    // Character->Restart();
-
-    bInGame = true;
-
+	HUD->Hide();
+	LevelDirector->ResetLevelDirector();
+	LevelDirector->Start();
+	Character->EnableInput(PlayerController);
+	Character->RestartCharacter();
+	//Camera->Restart();
+	//CharacterLight->Restart();
+	bInGame = true;
 }
 
 void AAVoidGameModeBase::GameOver()
 {
-    HUD->ShowGameOver();
-    Character->DisableInput(PlayerController);
-    LevelDirector->Stop();
+	HUD->ShowGameOver();
+	Character->DisableInput(PlayerController);
+	LevelDirector->Stop();
 }

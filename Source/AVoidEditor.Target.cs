@@ -9,6 +9,6 @@ public class AVoidEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
         DefaultBuildSettings = BuildSettingsVersion.V5;
-		ExtraModuleNames.Add("AVoid");
+		ExtraModuleNames.AddRange( new string[] { "AVoid" } );
 	}
 }

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 public class AVoidTarget : TargetRules
 {
-	public AVoidTarget(TargetInfo Target) : base(Target)
+	public AVoidTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
         DefaultBuildSettings = BuildSettingsVersion.V5;
-		ExtraModuleNames.Add("AVoid");
+		ExtraModuleNames.AddRange( new string[] { "AVoid" } );
 	}
 }

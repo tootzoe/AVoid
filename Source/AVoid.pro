@@ -44,18 +44,13 @@ include(inc.pri)
 #
 #
 
-DISTFILES += \
-    AVoid.Target.cs \
-    AVoid/AVoid.Build.cs \
-    AVoidEditor.Target.cs
-
 HEADERS += \
     AVoid/AVoid.h \
-    AVoid/Charactor/AVoidCamera.h \
-    AVoid/Charactor/AVoidCharacter.h \
-    AVoid/Charactor/CharacterLight.h \
-    AVoid/Charactor/Locomotion.h \
-    AVoid/Charactor/Mechanics.h \
+    AVoid/Character/AVoidCamera.h \
+    AVoid/Character/AVoidCharacter.h \
+    AVoid/Character/CharacterLight.h \
+    AVoid/Character/Locomotion.h \
+    AVoid/Character/Mechanics.h \
     AVoid/General/AVoidGameModeBase.h \
     AVoid/General/AVoidPlayerController.h \
     AVoid/Level/LevelDirector.h \
@@ -65,13 +60,18 @@ HEADERS += \
 
 SOURCES += \
     AVoid/AVoid.cpp \
-    AVoid/Charactor/AVoidCamera.cpp \
-    AVoid/Charactor/AVoidCharacter.cpp \
-    AVoid/Charactor/CharacterLight.cpp \
-    AVoid/Charactor/Locomotion.cpp \
-    AVoid/Charactor/Mechanics.cpp \
+    AVoid/Character/AVoidCamera.cpp \
+    AVoid/Character/AVoidCharacter.cpp \
+    AVoid/Character/CharacterLight.cpp \
+    AVoid/Character/Locomotion.cpp \
+    AVoid/Character/Mechanics.cpp \
     AVoid/General/AVoidGameModeBase.cpp \
     AVoid/General/AVoidPlayerController.cpp \
     AVoid/Level/LevelDirector.cpp \
     AVoid/Level/ObstacleSpawner.cpp \
     AVoid/UI/AVoidHUD.cpp
+
+DISTFILES += \
+    AVoid.Target.cs \
+    AVoid/AVoid.Build.cs \
+    AVoidEditor.Target.cs
